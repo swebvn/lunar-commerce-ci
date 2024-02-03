@@ -1,0 +1,36 @@
+---
+# name lib
+#pcre: pcre-8.42.tar.gz
+#openssl: openssl-1.0.2k.tar.gz
+#zlib: zlib-1.2.11.tar.gz
+
+#nginx: 	nginx-1.15.6.tar.gz
+#nginx_name: nginx-1.15.6
+
+pcre: pcre2-10.37.tar.gz
+openssl: openssl-1.1.1s.tar.gz
+zlib: zlib-1.2.12.tar.gz
+
+nginx: 	nginx-1.23.3.tar.gz
+nginx_name: nginx-1.23.3
+
+#php7: php-7.2.18.tar.gz
+php7: php-7.4.30.tar.gz
+php_name: php-7.2.18
+
+
+source_dir: /root/src
+host_pass: 123123123
+user_ngx: nginx
+user_domain: syslife
+group_domain: syslife
+server_name: syslife.info
+
+
+mysql_pass_root: eCy9FiGIaarFsdImv
+mysql_database: syslife_data
+mysql_user: syslife_user
+mysql_pass: vlsyslifedlu
+
+ftp_pass: 96Gmwalifee
+

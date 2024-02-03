@@ -1,0 +1,8 @@
+- name: lunar commerce ci
+  hosts: all
+  become: yes
+  become_method: sudo
+  
+  roles:
+    - Lunar-CI
+
