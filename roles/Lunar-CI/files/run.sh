@@ -6,10 +6,10 @@ Update_Source()
     filename="/tmp/list_users.txt"
 
     while IFS= read -r user; do
-    for domain_dir in /home/"$user"/domains/*/public_html/; do
+    for domain_dir in /home/"$user"/domains/*/public_html; do
         if [ -e "$domain_dir/.env" ]; then
-            cd "$domain_dir"
             sudo git config --global --add safe.directory "$domain_dir"
+            cd "$domain_dir"
             sudo git pull origin main
             sudo composer install --no-dev --optimize-autoloader --no-ansi --no-interaction
             sudo pnpm install && sudo pnpm build
