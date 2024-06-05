@@ -1,8 +1,11 @@
+# code: language=ansible
 - name: lunar commerce ci
   hosts: all
+  strategy: free
+  remote_user: deploy
   become: yes
   become_method: sudo
-  
+
   roles:
     - Lunar-CI
 
