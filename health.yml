@@ -3,43 +3,16 @@
 - name: Health check connection
   hosts: all
   strategy: free
-  remote_user: deploy
   become: yes
   become_method: sudo
+  gather_facts: no
 
   tasks:
-    - name: Check if the server is up
-      wait_for:
-        host: "{{ inventory_hostname }}"
-        port: 22
-        delay: 10
-        timeout: 60
-        state: started
-      delegate_to: localhost
-      ignore_errors: yes
-      register: result
-
-    - name: Fail if the server is down
-      fail:
-        msg: "Server is down"
-      when: result.failed
-
-    - name: Check if the server is reachable
-      ping:
-      delegate_to: localhost
-      register: result
-
-    - name: Fail if the server is not reachable
-      fail:
-        msg: "Server is not reachable"
-      when: result.failed
-
     - name: Check if the server is responding
-      shell: echo "Hello, world!"
-      delegate_to: localhost
+      shell : whoami
       register: result
 
-    - name: Fail if the server is not responding
+    - name: Fail
       fail:
-        msg: "Server is not responding"
-      when: result.stdout != "Hello, world!"
+        msg: "Can not use root user"
+      when: result.stdout != "root"
