@@ -17,7 +17,7 @@ Update_Source()
                 sudo php artisan migrate --force || { notice_fail "$domain"; continue; }
                 sudo php artisan optimize || { notice_fail "$domain"; continue; }
                 sudo php artisan icon:cache || { notice_fail "$domain"; continue; }
-                sudo php artisan page-cache:clear || { notice_fail "$domain"; continue; }
+                sudo php artisan deploy:cleanup || { notice_fail "$domain"; continue; }
                 sudo php artisan horizon:terminate || { notice_fail "$domain"; continue; }
                 sudo chown $user:$user -R "$domain_dir"/* || { notice_fail "$domain"; continue; }
                 sudo chown $user:$user -R "$domain_dir"/.* || { notice_fail "$domain"; continue; }
