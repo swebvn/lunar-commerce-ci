@@ -12,11 +12,20 @@ Update_Source()
                 sudo git config --global --add safe.directory "$domain_dir"
                 cd "$domain_dir" || continue
                 sudo git pull origin main || { notice_fail "$domain"; continue; }
-                sudo composer install --no-dev --optimize-autoloader --no-ansi --no-interaction || { notice_fail "$domain"; continue; }
-                sudo pnpm install && sudo pnpm build || { notice_fail "$domain"; continue; }
+
+                # we only run when the composer.lock changed
+                if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
+                    sudo composer install --no-dev --optimize-autoloader --no-ansi --no-interaction || { notice_fail "$domain"; continue; }
+                fi
+
+                # check if
+                if git diff --name-only HEAD@{1} HEAD | grep -qE 'package\.json|pnpm-lock\.yaml|js|css'; then
+                    sudo pnpm install && sudo pnpm run build || { notice_fail "$domain"; continue; }
+                fi
                 sudo php artisan migrate --force || { notice_fail "$domain"; continue; }
                 sudo php artisan optimize || { notice_fail "$domain"; continue; }
                 sudo php artisan icon:cache || { notice_fail "$domain"; continue; }
+                sudo php artisan filament:cache-components || { notice_fail "$domain"; continue; }
                 sudo php artisan deploy:cleanup || { notice_fail "$domain"; continue; }
                 sudo php artisan horizon:terminate || { notice_fail "$domain"; continue; }
                 sudo chown $user:$user -R "$domain_dir"/* || { notice_fail "$domain"; continue; }
