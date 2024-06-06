@@ -19,7 +19,7 @@ Update_Source()
                 fi
 
                 # check if
-                if git diff --name-only HEAD@{1} HEAD | grep -qE 'package\.json|pnpm-lock\.yaml|js|css'; then
+                if git diff --name-only HEAD@{1} HEAD | grep -qE 'package\.json|pnpm-lock\.yaml|\.js|\.css|\.blade\.php'; then
                     sudo pnpm install && sudo pnpm run build || { notice_fail "$domain"; continue; }
                 fi
                 sudo php artisan migrate --force || { notice_fail "$domain"; continue; }
