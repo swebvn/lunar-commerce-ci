@@ -21,7 +21,8 @@ Update_Source()
                 sudo git config --global --add safe.directory "$domain_dir"
                 cd "$domain_dir" || continue
 
-                su - "$user" -c "
+                su - "$user" -c "{
+                    cd $domain_dir
                     GIT_SSH_COMMAND=\"ssh -i $user_deploy_key\" git pull origin main
                     if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
                         composer install --no-dev --optimize-autoloader --no-ansi --no-interaction
@@ -35,7 +36,7 @@ Update_Source()
                     php artisan filament:cache-components
                     php artisan deploy:cleanup
                     php artisan horizon:terminate
-                " || { notice_fail "$domain" && continue; }
+                }" || { notice_fail "$domain" && continue; }
 
                 systemctl reload php8.2-fpm
 
