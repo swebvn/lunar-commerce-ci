@@ -32,7 +32,7 @@ Update_Source()
                 sudo chown $user:$user -R "$domain_dir"/.* || { notice_fail "$domain"; continue; }
                 sudo systemctl reload php8.2-fpm || { notice_fail "$domain"; continue; }
                 echo "Finish build on $domain!" && curl --location 'https://ping2.me/@daudau/sweb-stuff' \
-                --data-urlencode "message=$domain deployed"
+                --data-urlencode "message=$domain deployed" > /dev/null
             fi
         done
     done < "$filename"
