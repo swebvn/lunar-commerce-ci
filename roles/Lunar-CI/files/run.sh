@@ -8,7 +8,7 @@ Update_Source()
 
     while IFS= read -r user; do
         # check if user has the deploy key yet in /home/$user/.ssh/
-        if [ ! -e "$user_deploy_key" ]; then
+        if [ -e "$user_deploy_key" ]; then
             cp "$deploy_key" "/home/$user/.ssh/deploy_rsa.pem"
             chown $user:$user "/home/$user/.ssh/deploy_rsa.pem"
             chmod 600 "/home/$user/.ssh/deploy_rsa.pem"
@@ -21,28 +21,21 @@ Update_Source()
                 sudo git config --global --add safe.directory "$domain_dir"
                 cd "$domain_dir" || continue
 
-                su - $user -c "GIT_SSH_COMMAND=\"ssh -i $user_deploy_key\" git pull origin main"
-
-                # Check if git pull was successful
-                if [ $? -ne 0 ]; then
-                    notice_fail "$domain"
-                    continue
-                fi
-
-                # we only run when the composer.lock changed
-                if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
-                    su - $user -c "composer install --no-dev --optimize-autoloader --no-ansi --no-interaction"
-                fi
-
-                if git diff --name-only HEAD@{1} HEAD | grep -qE 'package\.json|pnpm-lock\.yaml|\.js|\.css|\.blade\.php'; then
-                    su - $user -c "pnpm install && pnpm run build"
-                fi
-                su - $user -c "php artisan migrate --force"
-                su - $user -c "php artisan optimize"
-                su - $user -c "php artisan icon:cache"
-                su - $user -c "php artisan filament:cache-components"
-                su - $user -c "php artisan deploy:cleanup"
-                su - $user -c "php artisan horizon:terminate"
+                su - "$user" -c "
+                    GIT_SSH_COMMAND=\"ssh -i $user_deploy_key\" git pull origin main
+                    if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
+                        composer install --no-dev --optimize-autoloader --no-ansi --no-interaction
+                    fi
+                    if git diff --name-only HEAD@{1} HEAD | grep -qE 'package\.json|pnpm-lock\.yaml|\.js|\.css|\.blade\.php'; then
+                        pnpm install && pnpm run build
+                    fi
+                    php artisan migrate --force
+                    php artisan optimize
+                    php artisan icon:cache
+                    php artisan filament:cache-components
+                    php artisan deploy:cleanup
+                    php artisan horizon:terminate
+                " || { notice_fail "$domain" && continue; }
 
                 systemctl reload php8.2-fpm
 
