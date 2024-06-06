@@ -12,6 +12,11 @@
       shell : whoami
       register: result
 
+    - name: Success
+      debug:
+        msg: "The server is responding"
+      when: result.stdout == "root"
+
     - name: Fail
       fail:
         msg: "Can not use root user"
