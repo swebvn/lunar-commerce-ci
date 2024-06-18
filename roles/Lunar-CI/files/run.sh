@@ -17,9 +17,9 @@ Update_Source()
         fi
 
         if [ ! -f "$user_deploy_key" ]; then
-            cp "$deploy_key" "/home/$user/.ssh/deploy_rsa.pem" || continue
-            chown $user:$user "/home/$user/.ssh/deploy_rsa.pem"
-            chmod 600 "/home/$user/.ssh/deploy_rsa.pem"
+            cp "$deploy_key" "$user_deploy_key" || continue
+            chown $user:$user "$user_deploy_key"
+            chmod 600 "$user_deploy_key"
         fi
 
         for domain_dir in /home/"$user"/domains/*/public_html; do
