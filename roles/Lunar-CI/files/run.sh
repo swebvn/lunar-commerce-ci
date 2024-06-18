@@ -8,12 +8,12 @@ Update_Source()
 
     while IFS= read -r user; do
         # check if user has the deploy key yet in /home/$user/.ssh/
-        if [ -e "$user_deploy_key" ]; then
+        user_deploy_key="/home/$user/.ssh/deploy_rsa.pem"
+        if [ ! -f "$user_deploy_key" ]; then
             cp "$deploy_key" "/home/$user/.ssh/deploy_rsa.pem"
             chown $user:$user "/home/$user/.ssh/deploy_rsa.pem"
             chmod 600 "/home/$user/.ssh/deploy_rsa.pem"
         fi
-        user_deploy_key="/home/$user/.ssh/deploy_rsa.pem"
 
         for domain_dir in /home/"$user"/domains/*/public_html; do
             if [ -e "$domain_dir/.env" ]; then
@@ -44,6 +44,11 @@ Update_Source()
                 --data-urlencode "message=$domain deployed" > /dev/null
             fi
         done
+
+        # remove the deploy key from user's home directory
+        if [ -f "$user_deploy_key" ]; then
+            rm -f "$user_deploy_key"
+        fi
     done < "$filename"
 }
 
