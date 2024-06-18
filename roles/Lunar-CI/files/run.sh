@@ -26,7 +26,6 @@ Update_Source()
             if [ -e "$domain_dir/.env" ]; then
                 domain=$(basename $(dirname "$domain_dir"))
                 sudo git config --global --add safe.directory "$domain_dir"
-                cd "$domain_dir" || continue
 
                 su - "$user" -c "{
                     cd $domain_dir
