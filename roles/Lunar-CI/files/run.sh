@@ -25,7 +25,7 @@ Update_Source()
         for domain_dir in /home/"$user"/domains/*/public_html; do
             if [ -e "$domain_dir/.env" ]; then
                 domain=$(basename $(dirname "$domain_dir"))
-                sudo git config --global --add safe.directory "$domain_dir"
+                # sudo git config --global --add safe.directory "$domain_dir"
 
                 su - "$user" -c "{
                     cd $domain_dir
