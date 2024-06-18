@@ -51,7 +51,6 @@ Update_Source()
         done
 
         # remove the deploy key from user's home directory
-        echo "Remove the deploy key $user_deploy_key"
         if [ -f "$user_deploy_key" ]; then
             rm -f "$user_deploy_key"
         fi
