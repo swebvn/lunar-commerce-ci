@@ -23,10 +23,8 @@ Update_Source()
         fi
 
         for domain_dir in /home/"$user"/domains/*/public_html; do
-            echo $domain_dir;
             if [ -e "$domain_dir/.env" ]; then
                 domain=$(basename $(dirname "$domain_dir"))
-                # sudo git config --global --add safe.directory "$domain_dir"
 
                 su - "$user" -c "{
                     cd $domain_dir
@@ -50,9 +48,6 @@ Update_Source()
                 echo "Finish build on $domain!" && curl --location 'https://ping2.me/@daudau/sweb-stuff' \
                 --data-urlencode "message=$domain deployed" > /dev/null
             fi
-
-            # break the loop
-            # break
         done
 
         # remove the deploy key from user's home directory
