@@ -23,13 +23,14 @@ Update_Source()
         fi
 
         for domain_dir in /home/"$user"/domains/*/public_html; do
+            echo $domain_dir;
             if [ -e "$domain_dir/.env" ]; then
                 domain=$(basename $(dirname "$domain_dir"))
                 # sudo git config --global --add safe.directory "$domain_dir"
 
                 su - "$user" -c "{
                     cd $domain_dir
-                    GIT_SSH_COMMAND=\"ssh -i $user_deploy_key\" git pull origin main
+                    GIT_SSH_COMMAND=\"ssh -i $user_deploy_key -o StrictHostKeyChecking=no\" git pull origin main || { notice_fail \"$domain\" && continue;}
                     if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
                         composer install --no-dev --optimize-autoloader --no-ansi --no-interaction
                     fi
@@ -49,12 +50,15 @@ Update_Source()
                 echo "Finish build on $domain!" && curl --location 'https://ping2.me/@daudau/sweb-stuff' \
                 --data-urlencode "message=$domain deployed" > /dev/null
             fi
+
+            # break the loop
+            # break
         done
 
         # remove the deploy key from user's home directory
-        # if [ -f "$user_deploy_key" ]; then
-        #     rm -f "$user_deploy_key"
-        # fi
+        if [ -f "$user_deploy_key" ]; then
+            rm -f "$user_deploy_key"
+        fi
     done < "$filename"
 }
 
