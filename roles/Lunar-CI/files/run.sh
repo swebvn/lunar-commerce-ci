@@ -9,8 +9,15 @@ Update_Source()
     while IFS= read -r user; do
         # check if user has the deploy key yet in /home/$user/.ssh/
         user_deploy_key="/home/$user/.ssh/deploy_rsa.pem"
+
+        if [ ! -d "/home/$user/.ssh" ]; then
+            mkdir -p "/home/$user/.ssh"
+            chown $user:$user "/home/$user/.ssh"
+            chmod 700 "/home/$user/.ssh"
+        fi
+
         if [ ! -f "$user_deploy_key" ]; then
-            cp "$deploy_key" "/home/$user/.ssh/deploy_rsa.pem"
+            cp "$deploy_key" "/home/$user/.ssh/deploy_rsa.pem" || continue
             chown $user:$user "/home/$user/.ssh/deploy_rsa.pem"
             chmod 600 "/home/$user/.ssh/deploy_rsa.pem"
         fi
