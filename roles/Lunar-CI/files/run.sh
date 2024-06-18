@@ -17,7 +17,7 @@ Update_Source()
         fi
 
         if [ ! -f "$user_deploy_key" ]; then
-            cp "$deploy_key" "$user_deploy_key" || continue
+            cp "$deploy_key" "$user_deploy_key"
             chown $user:$user "$user_deploy_key"
             chmod 600 "$user_deploy_key"
         fi
@@ -28,12 +28,12 @@ Update_Source()
 
                 su - "$user" -c "{
                     cd $domain_dir
-                    GIT_SSH_COMMAND=\"ssh -i $user_deploy_key -o StrictHostKeyChecking=no\" git pull origin main || { notice_fail \"$domain\" && continue;}
+                    GIT_SSH_COMMAND=\"ssh -i $user_deploy_key -o StrictHostKeyChecking=no\" git pull origin main
                     if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
                         composer install --no-dev --optimize-autoloader --no-ansi --no-interaction
                     fi
                     if git diff --name-only HEAD@{1} HEAD | grep -qE 'package\.json|pnpm-lock\.yaml|\.js|\.css|\.blade\.php'; then
-                        pnpm install && pnpm run build
+                        CI=1 pnpm install && pnpm run build
                     fi
                     php artisan migrate --force
                     php artisan optimize
@@ -51,6 +51,7 @@ Update_Source()
         done
 
         # remove the deploy key from user's home directory
+        echo "Remove the deploy key $user_deploy_key"
         if [ -f "$user_deploy_key" ]; then
             rm -f "$user_deploy_key"
         fi
@@ -60,7 +61,7 @@ Update_Source()
 notice_fail()
 {
     domain="$1"
-    curl --location 'https://ping2.me/@daudau/sweb-stuff' \
+    echo "Deploy failed on $domain!" && curl --location 'https://ping2.me/@daudau/sweb-stuff' \
     --data-urlencode "message=$domain deploy failed"
 }
 
