@@ -27,6 +27,7 @@ Update_Source()
                 domain=$(basename $(dirname "$domain_dir"))
 
                 su - "$user" -c "{
+                    echo "Start building on $domain_dir"
                     cd $domain_dir
                     GIT_SSH_COMMAND=\"ssh -i $user_deploy_key -o StrictHostKeyChecking=no\" git pull origin main
                     if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.json|composer\.lock'; then
