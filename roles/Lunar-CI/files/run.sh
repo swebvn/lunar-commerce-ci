@@ -47,8 +47,8 @@ Update_Source()
 
                 systemctl reload php8.2-fpm
 
-                echo "Finish build on $domain!" && curl --location 'https://ping2.me/@daudau/sweb-stuff' \
-                --data-urlencode "message=$domain deployed" > /dev/null
+                # echo "Finish build on $domain!" && curl --location 'https://ping2.me/@daudau/sweb-stuff' \
+                # --data-urlencode "message=$domain deployed" > /dev/null
             fi
         done
 
